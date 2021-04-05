@@ -1,0 +1,120 @@
+---
+title: "Homework 7"
+author: "Aditi Madhok"
+date: "3/24/21"
+output: pdf_document
+---
+
+
+Begin by loading the tidyverse:
+
+```{r}
+library(tidyverse)
+```
+
+In the assignment we'll play around some more with the gss_cat dataset. Take a look at it:
+
+```{r}
+gss_cat
+```
+
+1a. Let's start by making a new tibble with columns `relig` and `n`, where `n` is the number of rows that have each religon. Earlier in the semester you learnd how to do this with the groupby and summarize commands. This time, try to do it using the fct_count() command on the vector gss_cat$relig. That command will produce a tibble with columns `f` and `n`, so you'll have to follow this with a command to change `f` to `relig`. Finally, arrange your tibble in ascending order by `n`. 
+
+```{r}
+by_religon <- gss_cat$relig%>%
+  fct_count(gss_cat$relig)%>%
+  rename(relig=f)%>%
+  arrange(n)
+by_religon
+```
+
+1b. Add the `n` column from the `by_religon` dataset that you just created to the `gss_cat` dataset. 
+
+```{r}
+gss_cat_n<-gss_cat%>%
+  full_join(by_religon)
+gss_cat_n
+```
+
+
+1c. Build a pipe to do the following steps:
+  (1) Reorder the levels of the `relig` variable in the `gss_cat_n` dataset by popularity of religon.
+  (2) Drop the `n` variable
+  (3) Sort the rows by the `relig` variable, so that the rows corresponding to observers of the most popular religons are listed first.
+
+```{r}
+gss_cat_by_religon<-gss_cat_n%>%
+  mutate(relig=fct_reorder(relig,desc(n)))%>%
+  select(-n)%>%
+  arrange(relig)
+gss_cat_by_religon
+```
+
+
+2. Run the following code block to see the levels of the `marital` variable:
+
+```{r}
+levels(gss_cat$marital)
+```
+
+2a. Change the levels of the marital variable in the gss_dataset so that each entry is either "Currently Married", "Previously Married", or "Other". 
+
+
+```{r}
+gss_cat2a<-gss_cat%>%
+  mutate(marital=fct_collapse(marital,
+  "Other" = c("No answer", "Never married"),
+  "Previously Married" = c("Divorced", "Separated", "Widowed"),
+  "Currently Married" = c("Married")
+  ))%>%
+  count(marital)
+gss_cat2a
+```
+2b. Reorder the levels of the `marital` variable in the gss_cat2a dataset so that they are in the following order: "Currently Married", "Previously Married", "Other".
+
+```{r}
+gss_cat2b<-gss_cat2a%>%
+  mutate(marital=fct_relevel(marital, "Currently Married", "Previously Married", "Other"))%>%
+  arrange(marital)
+gss_cat2b
+```
+
+
+
+3a. A typical entry in the `rincome` variabe is something like the string "$7000 to 7999". For each income range, extract the low end into a column `low` and the high end into a coumn `high`. Then, remove the rows with NA entries in either one of these new columns. 
+
+```{r}
+gss_low_high<-gss_cat%>%
+  mutate(low=str_extract(rincome,"(?<=\\$)\\d+(?= )")) %>% 
+  mutate(high=str_extract(rincome,"\\d+(?=$)")) %>%
+  filter(!is.na(high))%>%
+  filter(!is.na(low))
+gss_low_high
+```
+
+3b. Convert the `low` and `high` column to integers, and add a new column to called `mid` which is the average of the two.
+
+```{r}
+gss_mid<-gss_low_high %>% 
+  mutate(low=parse_integer(low))%>%
+  mutate(high=parse_integer(high))%>%
+  mutate(mid=(low+high)/2)
+gss_mid
+```
+
+3c. Order the levels of the `partyid` variable according to the `mid` variable. Then, sort the dataset by partyid. Finally, get rid of all columns besides `partyid` and `rincome`. 
+
+```{r}
+gss_party_by_income<-gss_mid%>%
+  mutate(partyid=fct_reorder(partyid, mid))%>%
+  arrange(partyid)%>%
+  select(partyid, rincome)
+gss_party_by_income
+```
+
+
+
+
+
+
+

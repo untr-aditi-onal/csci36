@@ -1,0 +1,71 @@
+---
+title: "group_by and aggregation functions"
+author: "David Bachman"
+date: "2/3/2021"
+output: html_document
+---
+
+```{r}
+library("tidyverse")
+```
+
+```{r}
+mtcars
+```
+
+```{r}
+mtcars %>%
+  filter(cyl==4) %>%
+  arrange(desc(qsec)) %>%
+  mutate(qmin=qsec/60)%>%
+  select(hp,qmin)
+```
+
+```{r}
+mtcars %>%
+  summarize(min_mpg=min(mpg),max_time=max(qsec),all(cyl>4))
+```
+
+```{r}
+mtcars %>%
+  group_by(cyl) %>%
+  summarize(min_mpg=min(mpg),max_time=max(qsec),all(cyl>4))
+```
+
+```{r}
+mtcars %>%
+  group_by(cyl) %>%
+  summarize(n())
+```
+
+```{r}
+mtcars %>%
+  group_by(cyl) %>%
+  arrange(qsec)
+```
+
+```{r}
+mtcars %>%
+  group_by(vs) %>%
+  summarize(max_power=max(hp),avg_power=mean(hp),number=n())
+```
+
+```{r}
+mtcars%>%
+  filter(hp>max(hp)-100)
+```
+
+```{r}
+mtcars %>%
+  group_by(cyl) %>% 
+  filter(hp>max(hp)-50) %>%
+  arrange(cyl)%>%
+  #ungroup()%>%
+  summarize(mean(hp))
+
+```
+
+
+
+
+

@@ -1,0 +1,21 @@
+h1 {
+  color:  blue;
+}
+
+h2 {
+  color:  green;
+}
+
+.theorem{
+	padding-top: 5px;
+	padding-left: 5px;
+	background: #dcb4ff;
+	border-top:  solid purple;
+	border-bottom: solid purple;
+	margin-bottom: 25px;
+}
+
+.theorem::before{
+  content: "Theorem ";
+	font-weight: bold;
+}

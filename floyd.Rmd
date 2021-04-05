@@ -1,0 +1,19 @@
+---
+title: "floyd"
+output: html_document
+---
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+policing <- read_csv("MPV.csv")%>%  
+  filter(Race == "Black")%>% 
+  count()
+policing
+```
+
+
+
+

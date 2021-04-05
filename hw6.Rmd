@@ -1,0 +1,91 @@
+---
+title: "hw6"
+author: "Aditi Madhok"
+date: "3/16/21"
+output: pdf_document
+---
+
+INSTRUCTIONS: For each question below, fill in the regular expression(s) to do the required task. DO NOT USE ANY OTHHER COMMANDS.
+
+We begin as usual by loading up the tidyverse:
+```{r}
+library(tidyverse)
+```
+
+Now, run this code chunk to create a dataset containing the information for various Professors in Claremont who teach Data Science classes:
+
+```{r}
+DrB<-"Bachman, David \n bachman@pitzer.edu  \n (909) 607-7961  \n Avery 220 \n Pitzer College"
+DrHu<-"Huber, Mark \n mhuber@cmc.edu \n (909) 607-0938 \n Adams Hall 217 \n Claremont McKenna College"
+DrO<-"Ou, Winston \n Miller 205 \n (909) 607-1794 \n Email: wcwou@scrippscollege.edu \n Scripps College"
+DrHa<-"Hardin, Jo \n Millikan 2351 \n (909) 607-8717 \n jo.hardin@pomona.edu \n Pomona College"
+DSProfs<-tibble("info"=c(DrB,DrHu,DrO,DrHa))
+DSProfs
+```
+
+1. Add a column to this tibble that contains the name of each fauclty member. (The first entry in the name column should be "Bachman, David", the second entry should be "Huber, Mark", etc.)
+
+```{r}
+DSProfs1<-DSProfs%>%mutate(name=str_extract(info,"[A-z]+, [A-z]+"))
+DSProfs1
+```
+
+2. Add a column containing the phone number for each faculty member. (The first entry in the phone column should be "(909) 607-7961".)
+
+```{r}
+DSProfs2<-DSProfs1%>%mutate(phone=str_extract(info,"\\(\\d+\\) \\d+-\\d+"))
+DSProfs2
+```
+
+3. Add a column containing the email addresses of each faculty member. (The first entry should be "bachman@pitzer.edu".)
+
+```{r}
+DSProfs3<-DSProfs2%>%mutate(email=str_extract(info,"[a-z]+.[a-z]+(?=@)@[a-z]+.[a-z]+"))
+DSProfs3
+```
+
+4. Add a column containing the office location. (Be careful! The building name may be one or two words. For example, the first entry will be "Avery 220", while the second entry should be "Adams Hall 217".)
+
+```{r}
+DSProfs4<-DSProfs3%>%mutate(office=str_extract(info,"[A-z].+(?=\\d+)\\d+"))
+DSProfs4 
+```
+
+5. Add a column containing the school name. (Hint: This will be the one or two words immediately before the string " College". The first entry in this column should be "Pitzer" and the second entry should be "Claremont McKenna".)
+
+```{r}
+DSProfs5<-DSProfs4%>%mutate(college=str_extract(info,"[A-z].+(?= College)"))
+DSProfs5
+```
+
+6. There is nothing to do for this question except to run the following code chhunk to drop the "info" column. We no longer need it.
+
+```{r}
+DSProfs6<-DSProfs5%>%select(-info)
+DSProfs6
+```
+
+
+7. Change the `name` column so that each entry is "firstname lastname". (The first entry will now be "David Bachman".)  
+
+```{r}
+DSProfs7<-DSProfs6%>%mutate(name=str_replace(name,"([A-z]+), ([A-z]+)", "\\2 \\1"))
+DSProfs7
+```
+
+8. Change the `phone` column so that each entry is "XXX-XXX-XXXX". (The first entry will now be "909-607-7961".)
+
+```{r}
+DSProfs8<-DSProfs7%>%mutate(phone=str_replace(phone,"(\\()(\\d+)(\\)) (\\d+-)(\\d+)","\\2\\-\\4\\5"))
+DSProfs8
+```
+
+9. Add a `domain` column that contains the domain name in each faculty member's email address that is  immediately after the "@" symbol. (The second entry will be "cmc" and the third entry will be "scrippscollege".)
+
+```{r}
+DSProfs9<-DSProfs8%>%mutate(domain=str_extract(email,"(?<=@)[a-z]+"))
+DSProfs9
+```
+
+
+

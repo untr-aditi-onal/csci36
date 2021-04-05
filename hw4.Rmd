@@ -1,0 +1,140 @@
+---
+title: 'Homework 4'
+author: "Aditi Madhok"
+output: pdf_document
+---
+
+Special Instructions: In order to do this homework, you will need the datasets `results.csv`, `grades.csv`, and `dates.csv`. Download these from Piazza and make sure they are in the same directory on your computer as your homework assignment. 
+
+
+```{r}
+library(tidyverse)
+```
+
+1.  The following command creates a tibble that gives the number of days of rainfall for five cities over three months.
+
+```{r, warning = FALSE, message = FALSE}
+rf1 <- read_csv2('City;January;February;March
+  Atlanta, Georgia;11;10;10
+  Austin, Texas;7;7;9
+  Baltimore, Maryland;10;9;10
+  Birmingham, Alabama;11;10;10
+  Boston, Massachusetts;11;10;12')
+
+rf1
+```
+
+  a.  Tidy this data! The resulting tibble shoud have seperate `City` and `State` columns, a `Month` column, and a `Rainfall` column. The values in the `Rainfall` column should be integers.
+  
+```{r}
+tidy_rf1<-rf1 %>% 
+  separate(City, into = c("City", "State"))%>% 
+  pivot_longer(cols=c('January':'March'), names_to = "Month", values_to = "Rainfall")%>%
+  mutate(Rainfall=as.integer(Rainfall))
+tidy_rf1 
+```
+  
+  
+  
+b.  Create a tibble with columns `City` and `Avg_Rainfall` showing the mean number of days of rainfall over January through March for each of the five cities. (Note that this would have been very difficult without doing part a !) 
+
+```{r}
+City_Averages <-tidy_rf1 %>% 
+  group_by(City) %>% 
+  summarize(Avg_Rainfall=mean(Rainfall)) 
+City_Averages
+```
+
+c. In the tible `tidy_rf1` that you made in part a, assume that each observation happened on the first of the month in the year 2007. Convert the `Month` column to a `Date` column, where each entry has a <date> datatype.
+
+```{r}
+tidy_rf1_with_dates<-tidy_rf1 %>%
+  mutate(Day=1,Year=2007)%>%
+  unite(col=Date,Month,Day,Year,sep="-")%>%
+  mutate(Date=parse_date(Date,"%B-%d-%Y"))
+tidy_rf1_with_dates
+```
+
+
+--------------------
+
+2. Remove the `GEOID` and `moe` columns and then tidy the dataset us_rent_income. (Your tibble should have columns 'NAME', 'income', and 'rent'.) Then, create a new column called `RTI` which gives the rent-to-income ratio. Finally, sort your rows in order of increasing RTI to find out what is the most affordable state for renters. 
+
+```{r}
+tidy_rent <- us_rent_income %>%
+  select(-GEOID,-moe) %>%
+  pivot_wider(names_from = "variable", values_from = "estimate") %>%
+  mutate (RTI=rent/income) %>%
+  arrange(RTI)
+tidy_rent 
+```
+
+--------------------
+
+
+3. Run the following code block to create a tibble called `race`:
+
+```{r}
+race<-read_csv("Name,   50, 100, 150, 200, 250, 300, 350\n Carla,   1.2,   1.8,   2.2,   2.3,   3,     2.5,   1.8\n    Mace,    1.5,   1.1,   1.9,   2,     3.6,   3,     2.5\n    Lea,     1.7,   1.6,   2.3,   2.7,   2.6,   2.2,   2.6\n Karen,   1.3,   1.7,   1.9,   2.2,   3.2,   1.5,   1.9")
+
+race
+```
+
+The `Name` column should be self-explanatory. The other column headings are lengths of time. The entries in those column are scores. Tidy this tibble! Your answer should have columns `Name`, `Time`, and `Score`. Entries in the `Time` column should be integers, and entries in the `Score` column should be double. 
+
+```{r}
+tidy_race<-race %>%
+  pivot_longer(cols=-Name, names_to= "Time", values_to = "Score") %>%
+  mutate(Time=parse_integer(Time))
+tidy_race
+```
+
+4. Run the following code block to create the `results` tibble.
+
+```{r}
+results<-read_csv("results.csv")
+results
+```
+The `Individ` column identifies the individual participating in the experiment. The `Treatmnt` column gives the trial type ("Treat" or "Cont"). The `value` column gives the results of the experiment. Tiddy this tibble! Your answer should have 3 columns, including an `Individ` column. The `Individ` column should be numbers.
+
+```{r}
+tidy_results<-results %>%
+  mutate(Individ=parse_number(Individ))%>%
+  pivot_wider(names_from = "Treatmnt",values_from = "value")
+tidy_results  
+```
+
+5. Run the following code block to create the `grades` tibble.
+
+```{r}
+grades<-read_csv("grades.csv")
+grades
+```
+Tidy this tibble! Some hints: 
+  1) Start by making `ID` and `Test` two columns.  
+  2) A single observation in the tidy version of this tibble is what hapened to one ID, in a given Year, in a specific Quarter.  (So there should be one row with ID ==1, Year == 2008, Quarter == Fall. Another row will have ID ==1, Year == 2009, Quarter == Winter, etc.)
+  3) Your final tibble should have 5 columns and 18 rows
+
+```{r}
+tidy_grades <- grades%>%
+  separate("ID Test", into = c("ID", "Test"))%>% 
+  pivot_longer(cols=c('Fall':'Winter'),names_to = "Quarter")%>%
+  pivot_wider(names_from=Test,values_from=value)
+tidy_grades  
+```
+
+6. Run this code block to create the `dates` tibble.
+```{r}
+dates<-read_csv("dates.csv")
+dates
+```
+Tidy this tibble! Your final answer should just have an `observation` column and a `Date` column, where the latter has a <date> datatype.
+
+```{r}
+tidy_dates<-dates%>%
+  pivot_wider(names_from="TT",values_from=number)%>%
+  select(-starts_with('X'))%>%
+  unite(col="Date",c("Month","Day","Year"),sep="-")%>%
+  mutate(Date=parse_date(Date,"%m-%d-%Y"))
+tidy_dates
+```

@@ -1,0 +1,143 @@
+---
+title: 'Homework #2:  Transforming Data'
+author: "Aditi Madhok"
+date: "2/3/21"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Let's add our libraries first:
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(nycflights13)
+```
+
+
+1. Consider the `flights` variable from the `nycflights13` package.  Use the `select` command to create tibbles with the variables described below:
+
+  a. Only the carrier and tail number.
+  
+```{r}
+planes<- select(flights, carrier | tailnum)
+planes
+```
+
+  b. All variables except the year.
+  
+```{r}
+not_year<- select (flights, !(year))
+not_year
+```
+
+  c. Any variable ending with the word `time'.
+```{r}
+time_variables<- select (flights, ends_with("time"))
+time_variables
+```
+
+  d. The first 9 variables.
+```{r}
+first_nine<- select(flights, year : arr_delay)
+first_nine
+```
+
+
+2. Use the filter function to find all the flights that satisfy the following conditions.
+
+    a. Had an arrival delay of two or more hours.
+    
+```{r}
+arr_delay_ge2 <- filter(flights, arr_delay>=120)
+arr_delay_ge2
+```
+    
+    b. Flew to Houston (airport codes `IAH` or `HOU`).
+
+```{r}
+to_houston <- filter(flights,dest =="IAH" | dest == "HOU")
+to_houston
+```
+
+    
+    c.  Departed from JFK in July.
+
+```{r}
+JFK_July<-filter(flights,origin =="JFK", month == "7")
+JFK_July
+```
+
+   d. Another useful dplyr filtering helper is `between`.  Look up what it does and how to use it. Then, use it to find flights that left between 0 and 60 minutes late.
+
+```{r}
+late <- filter(flights, (between(dep_delay,0,60)))
+late
+```
+
+  e. Filter the 'flights' dataset to *remove* all flights with missing departure times.
+```{r}
+flights_with_dep_time<-filter(flights,!is.na(dep_time))
+flights_with_dep_time
+```
+
+----
+
+
+3. Practice with mutate.
+
+ a.  Consider the `distance` variable in the `flights` dataset.  Currently this is measured in miles.  Convert this to feet with the `mutate` command (the convereted variable should still be called 'distance').
+
+```{r}
+flights_with_feet <- mutate(flights, distance=distance*5280)
+flights_with_feet
+```
+
+
+  b. Add a variable `speed` to the `flights` table that gives the average flight speed, **in miles per hour**.
+  
+```{r}
+flights_with_speed<- mutate(flights,speed=distance/(air_time/60)) 
+flights_with_speed
+```
+
+c. Add a variable to `flights` called `early` which is TRUE if the flight arrival early and FALSE if it arrived on time or late.
+
+```{r}
+early_flights<- mutate(flights,early=(arr_delay<0)) 
+early_flights
+```
+  
+
+
+----
+
+
+4.  The `arrange` function sorts a variable from low to high. 
+
+  a. Sort 'flights' so that the flights that departed closest to their scheduled departure time are first. 
+
+```{r}
+most_on_time<-arrange(flights, abs(dep_delay))
+most_on_time
+```
+
+  b. Sort `flights` according to their arrival delay, **from high to low**.
+  
+```{r}
+latest_arrival<- arrange(flights,desc(arr_delay))
+latest_arrival
+```
+
+
+  
+  c. Use `arrange` to sort `early_flights` (from Problem 3c) on the variable `early`.  (Is `TRUE` or `FALSE` the lower value?)
+ #false is lower value so
+```{r}
+sorted_by_boolean<-arrange(early_flights)
+sorted_by_boolean
+```
+
+
+----
+
+

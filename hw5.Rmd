@@ -1,0 +1,108 @@
+---
+title: "Homework 5"
+author: "Aditi Madhok"
+output: pdf_document
+---
+
+For this homework assignment we will be using the tidyverse, and several of the datasets included in the ncyflights13 package:
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+1. Using a mutating join operation, give the number of flights flown by each model of plane. (Think about which kind of join you should do so that you don't have NA models.) Columns should be `model` and `n`.  Sort by increasing `n`.
+
+```{r}
+num_flights <- planes %>%
+  inner_join(flights, by= "tailnum") %>%
+  count(model) %>%
+  arrange(n)
+num_flights 
+```
+
+2a. Create a tibble that counts the number of times that any particular plane has flown. Filter this to only include planes that flew out of New York at least 100 times in 2013. Columns should be `tailnum` and `num_flights`.
+
+```{r}
+planes_geq_hundred <- flights %>% 
+  filter(origin == "JFK" | origin == "LGA" | origin == "EWR" & year== "2013")%>%
+  group_by(tailnum) %>%
+  summarize(num_flights = n()) %>%
+  filter(num_flights>=100) 
+planes_geq_hundred
+```
+
+
+
+2b Using a filtering join operation, filter `flights` to only show flights with planes that flew at least 100 flights.
+
+```{r}
+flights_geq_hundred <- flights %>%
+  semi_join(planes, by= "tailnum") %>%
+  group_by(tailnum) %>%
+  summarize(flights = n()) %>%
+  filter(flights>=100) 
+flights_geq_hundred
+```
+
+3. Using the `flights` and `weather` datasets, give the average dep_delay for each degree of temperature, where each temperature reading is rounded down to the nearest integer. (Watch out of NA values when you compute averages!) Columns of your tibble should be `temp` and `avg_delay`.
+```{r}
+dep_delay_by_temp <- flights%>% 
+  full_join(weather)%>% 
+  group_by(temp)%>% 
+  mutate(temp=as.integer(temp))%>% 
+  summarize(avg_delay=mean(dep_delay))%>% 
+  filter(!is.na(avg_delay))
+dep_delay_by_temp
+```
+
+4. Add the variables `dest_lat` and `dest_lon` to `flights`, containing the latitude and longitude of the destination airports.
+ 
+```{r}
+flights_with_latlong <- airports %>%
+  right_join(flights, by=c("faa"="dest")) %>%   
+  rename(dest_lat = lat) %>%  
+  rename(dest_lon = lon) 
+flights_with_latlong 
+```
+
+5. Using the datasets `flights`, `planes`, and `airlines`, give the total number of passengers each airline would have flown out of New York in 2013 if every flight was full. Your answer should have columns `name` (for the full name of the airline) and `Total_Passengers`. Sort by decreasing Total_Passengers.
+
+```{r}
+total_passengers_by_airline<- flights%>%left_join(planes, by=c("tailnum"))%>%
+  left_join(airlines,by=c("carrier"))%>%
+  group_by(name)%>%
+  summarize("Total_Passengers"=sum(seats,na.rm=TRUE))%>%
+  arrange(desc(Total_Passengers))
+total_passengers_by_airline
+```
+
+6a. Use a filtering join operation to include only the rows of the `flights` dataset where the destination airport *does not* appear in the `airports` table.
+
+```{r}
+nodest <- flights %>%
+  anti_join(airports, by = c("dest"="faa"))%>%
+  filter (!is.na(dest))
+nodest
+```
+
+b. Use a filtering join operation to include only the rows of the `flights` dataset where the temperature *does not* appear in the `weather` table.
+
+```{r}
+notemp<-flights%>%
+  anti_join(filter(weather, !is.na(temp)))
+```
+
+c. Use a set operation to give one tibble which contains all the rows of `flights` for which either the destination city or the temperature are unknown
+
+```{r} 
+nodest_or_notemp<-union(nodest,notemp)
+nodest_or_notemp
+```
+
+d. Use a set operation to give one tibble which contains all the rows of `flights` for which both the destination city and the temperature are unknown
+
+```{r}
+nodest_and_notemp<-intersect(nodest,notemp)
+nodest_and_notemp
+```

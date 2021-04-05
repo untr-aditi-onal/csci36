@@ -1,0 +1,108 @@
+---
+title: "Homework 3"
+author: "Aditi Madhok"
+date: "2/8/21"
+output: pdf_document
+---
+
+
+We will continue working with the `starwars` dataset that is loaded with tidyverse. 
+
+```{r}
+library("tidyverse")
+starwars
+```
+
+USE PIPES TO ANSWER EVERY QUESTION IN THIS ASSIGNMENT. 
+
+1. Create a tibble `bio` that contains the name, height and mass for each character in Star Wars. Only include rows where the height and mass are defined (not NA). Add a column called `ratio` which is the ratio of height to mass, and order your rows so that this new column is increasing.
+
+```{r}
+bio <- starwars %>% 
+  select (name,height,mass) %>% 
+  filter(!is.na(height), !is.na(mass))%>% 
+  mutate(ratio=(height/mass)) %>% 
+  arrange(ratio)
+bio
+```
+
+2. What are the most common eye colors among Star Wars characters? To answer this, create a tibble `eyes` with columns `eye_color` and `number` that gives the number of characters with each eye color, sorted so that the most common eye color is first.
+
+```{r}
+eyes<-starwars %>%
+  group_by(eye_color) %>%
+  summarize(number=n()) %>%
+  arrange(desc (number)) 
+eyes
+```
+
+3. Create a tibble `sex_mass` with columns `sex`, `min_mass`, `max_mass`, and `mass_diff`. The min_mass and max_mass columns should be the minimum and maximum mass among all characters of the same sex (watch out for missing mass values). The `mass_diff` column should give the difference of these two values. Remove rows with NA or NaN values for the sex (your tibble should have 4 rows). Order rows in decreasing order of `mass_diff`.
+
+```{r}
+sex_mass <-starwars %>% 
+  group_by(sex)%>% 
+  filter(!is.na (sex))%>% 
+  summarize(min_mass = min(mass, na.rm = TRUE),max_mass = max(mass, na.rm = TRUE), mass_diff=(max_mass-min_mass)) %>% 
+  arrange(desc(mass_diff))
+sex_mass
+```
+
+
+4. Create a tibble called `brown` with columns `homeworld` and `all_brown`. The `all_brown` column should be a boolean variable (TRUE or FALSE), with a value that tells you if every character from that homeworld has brown eyes. 
+
+```{r}
+brown <-starwars %>% 
+  group_by(homeworld) %>% 
+  summarize(all_brown=all(eye_color== "brown"))  
+brown
+```
+
+5. Create a tibble called `Human_worlds` with columns `homeworld` and `number`. The `number` column should show how many humans were from each homeworld. DO NOT list any world for which only 1 Human calls home. DO list how many humans were from unknown homeworlds (homeworld == NA).
+```{r}
+Human_worlds <- starwars %>% 
+  group_by(homeworld) %>%  
+  filter(species == "Human") %>%
+  summarize(number=sum(species == "Human")) %>%
+  filter(number>1)
+Human_worlds 
+```
+
+
+6. Create a tibble `tallest` that has columns `name` and `homeworld` that gives the name of the tallest character from each homeworld. (Watch out for NA heights.) Sort your table so that the tallest characters in your tibble are listed first. (Hint: someone who is the tallest from their homeworld has a height that is the maximum among all heights from that world.)
+
+```{r}
+tallest <- starwars %>% 
+  group_by(homeworld) %>% 
+  filter(rank(desc(height), ties.method ="first")==1) %>% 
+  arrange(desc(height)) %>%   
+  select(name,height)
+tallest
+```
+
+
+
+
+
+7. Create a tibble called `tallest2` with columns `name` and `homeworld` that gives the name of the second tallest character from each homeworld. Sort your table so that the tallest characters in your tibble are listed first.
+
+```{r}
+tallest2 <- starwars %>% 
+  group_by(homeworld) %>% 
+  filter(rank(desc(height))==2) %>% 
+  arrange(desc(height)) %>%
+  select(name)
+tallest2
+```
+
+8. Create a tibble called `shortest3_avg` with columns `homeworld` and `avg` that gives the average of the heights *of the three shortest characters* from each homeworld. Only include homeworlds with at least three characters. Do not include unknown homeworlds (`homeworld`==NA). Sort your table so that the shortest averages are listed first.
+
+```{r}
+shortest3_avg<- starwars %>%
+  group_by(homeworld) %>%
+  filter(!is.na(homeworld)) %>%
+  slice(height, n=3) %>%
+  summarize(avg=mean(height)) %>%
+  arrange(avg) %>%
+  select(homeworld, avg)
+shortest3_avg
+```

@@ -1,0 +1,93 @@
+---
+title: "Lab1"
+author: "Aditi Madhok"
+date: "1/26/2021"
+output:
+  pdf_document: default
+  html_document:
+    css: lab-style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tutorial Answers 
+
+The *following* are **answers** to the lab.
+
+# Section 1 
+
+@. 
+2:50
+seq(50, 2, by=-2)
+
+@.
+z <- 8 
+w <- 7 
+z*w
+
+@.
+x <- c(-1,2,3)
+x^(1/2)
+
+# Section 2 
+
+```{r cars, echo=TRUE}
+summary(cars)
+```
+
+
+4. 
+```{r,  echo=TRUE, fig.height = 8, fig.width = 8}
+plot(pressure)
+```
+
+5.
+```{r}
+x <- 5
+x^(1/2)
+```
+
+
+Here is my inline name $admadz$.
+\[
+ad + madz.
+\]
+
+$ad \geq madz$
+*I am my family (name) but also my own **individual***
+
+i am
+$\bar{me}$
+
+\[
+\sum_{i = 0}^\infty \rho^i = \frac{1}{1 - \rho}.
+\]
+
+but make it LaTeX now (behind the scenes)
+
+\[
+\int_{i = 0}^1 x^2 \ dx = \frac{1}{3}.
+\]
+
+6. 
+\[
+sin (x)
+\]
+
+7. lol reference above 
+
+8. $\pi$
+
+9. 
+```{r}
+x <-13
+x^(1/2)
+```
+
+11.
+:::: {.theorem}
+If $a$ and $b$ are the two shorter lengths of a right triangle, and $c$ is the longer length, th
+en $a^2 + b^2 = c^2$.
+::::

@@ -1,0 +1,58 @@
+---
+title: "MoreTidyverse"
+author: "David Bachman"
+date: "2/8/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+```{r}
+flights%>%group_by(abs(dep_delay))%>%summarize(n())
+```
+
+```{r}
+flights%>%
+  group_by(dest)%>%
+  summarize(avg_arr_delay=mean(arr_delay,na.rm=TRUE))%>%
+  arrange(desc(avg_arr_delay))
+```
+
+```{r}
+flights%>%
+  group_by(origin)%>%
+  summarize(num_dest=n_distinct(dest))
+```
+
+```{r}
+flights%>%
+  group_by(origin)%>%
+  summarize(num_flights=n())
+```
+
+```{r}
+flights%>%
+  group_by(carrier)%>%
+  summarize(total_miles=sum(distance),num_flights=n())%>%
+  arrange(desc(total_miles))%>%
+  mutate(mi_per_flt=total_miles/num_flights)
+
+
+```
+
+```{r}
+flights%>%
+  group_by(carrier)%>%
+  filter(air_time == max(air_time,na.rm=TRUE))%>%
+  select(month,day,carrier)
+```
+
+```{r}
+flights%>%
+  group_by(carrier)%>%
+  filter(rank(desc(distance),ties.method="first")==1)%>%
+  select(dest)
+```

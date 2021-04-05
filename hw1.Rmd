@@ -1,0 +1,140 @@
+---
+title: 'Homework #1 CSCI 036'
+author: "Aditi Madhok"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<span style="color:blue">
+**Statistics**
+</span>
+
+Find by hand the sample average of $3.1,4.2,$ and $2.6$. We can also do this in R by assigning the vector to a variable name, and then using the `mean` command.  Try the following code and see if your answer was correct:
+
+```{r}
+v <- c(3.1,4.2,2.6)
+mean(v)
+```
+
+1.  The following command in R assigns a vector of length 4 to the variable `x`:
+
+```{r echo=FALSE}
+x <- c(0.3,0.1,0.4,0.7)
+```
+    (a) Find the sample average of the vector `x` with the `mean` command.
+
+```{r echo=FALSE}
+x <- c(0.3,0.1,0.4,0.7)
+avg <- mean(x)
+avg 
+```
+
+    
+    (b) Find the sample standard deviation with the `sd` command.
+
+```{r}
+std <- sd(x)
+std 
+```
+
+    (c) Use `sum` to add the values in the vector together.
+    
+```{r}
+sum<- sum(x)
+sum 
+```
+    
+    (d) Find the sum of the squares of the values `x`. (Hint: Use `x^2` to get the vector whose components are the square of the entries in `x`.)
+    
+```{r}
+sum_squares <- sum (x^2)
+sum_squares
+```
+    
+
+2. Consider the built in data set `ToothGrowth` in R.  
+
+  a. What are the units on the dose of Vitamin C?  (Remember that you can information about a command or variable in R by typing a ? followed by the thing you are trying to get help about in the console.)
+
+```{r}
+units <- "milligrams"
+```
+
+    b. Use the `summary` command in the console to determine the mean length that the teeth grow in the guinea pigs.
+    
+```{r}
+mean_length <- 18.81
+```
+   
+    c. Use the `summary` command to find the median length that the teeth grow in the guinea pigs.
+    
+```{r}
+median_length <- 19.25
+```
+   
+    d. Use `plot(ToothGrowth$dose,ToothGrowth$len)` to see how the length of the teeth varies with Vitamin C dose.  From this plot, would you say that increased Vitamin C results in greater tooth length?
+
+```{r}
+answer <- "YES"
+```
+
+
+3.  The command
+```
+y <- runif(n = 10,min = 0, max = 1)
+```
+will generate 10 uniform random numbers from 0 to 1, and place them in the vector y.
+
+    (a) Modify this command to create a vector z of a million uniforms. 
+    
+```{r}
+z <- runif(n = 1000000,min = 0, max = 1)
+```
+    
+    (b) Find the sample mean of your uniforms.
+    
+```{r}
+z_mean <- mean(z)
+z_mean
+```
+
+    
+    (c) Find the sample standard deviation of your uniforms.
+
+```{r}
+z_std <- sd(z)
+z_std
+```
+
+4. a. Write code to create a vector `u` consisting of the numbers 1, 2, 3 and 4. Then, create a vector called `a` which is 6*u. (Make sure you look at `a` to see what it is.)
+  
+```{r}
+u <- 1:4
+a <- 6*u
+a
+```
+
+    b. Assign `w <- c(4,0,2,1)`.  Then, create a vector `b` which is `u*w`. (What vector is this?)
+  
+```{r}
+w <- c(4,0,2,1)
+b <- u*w
+b
+```
+
+    c. Assign `x <- c(1,2)`.  Then, create a vector `c` which is `u*x`. (What is that?!)
+    
+```{r}
+x <- c(1,2)
+c <- u*x
+c
+```
+
+
